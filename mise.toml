@@ -1,0 +1,101 @@
+[tools]
+bun = "latest"
+hk = "1.38.0"
+node = "22"
+pkl = "latest"
+"npm:@biomejs/biome" = "latest"
+"npm:@webosose/ares-cli" = "2.4.0"
+
+[settings]
+npm.package_manager = "bun"
+
+[tasks.test]
+description = "Run unit tests"
+raw = true
+run = "bun test"
+
+[tasks.lint]
+description = "Run Biome linter"
+run = "biome lint ."
+
+[tasks.format]
+description = "Check Biome formatting"
+run = "biome format ."
+
+[tasks."format:fix"]
+description = "Fix Biome formatting"
+run = "biome format --write ."
+
+[tasks.typecheck]
+description = "Type-check with tsc"
+run = "bunx tsc --noEmit"
+
+[tasks.ci]
+description = "Run all CI verification checks"
+run = "mise test ::: lint ::: format ::: typecheck"
+
+[tasks.build]
+description = "Bundle the TV app into dist/"
+run = "bun scripts/build.ts"
+
+[tasks.sync-themes]
+description = "Regenerate src/app/themes.generated.ts from pinned Omarchy themes"
+run = "bun scripts/sync-themes.ts"
+
+[tasks.make-icon]
+description = "Regenerate public/icon.png and public/largeIcon.png"
+run = "bun scripts/make-icon.ts"
+
+[tasks.push]
+description = "Collect omp usage and push it to the TV"
+run = "bun src/collector/push.ts"
+
+[tasks.serve]
+description = "Preview dist/ on :3010"
+run = "bun scripts/serve.ts"
+
+[tasks.tunnel]
+description = "Ensure local SSH tunnel to TV port 22 is active"
+run = """
+if ! nc -z 127.0.0.1 2222; then
+  echo "Opening SSH tunnel to TV:22 via t1..."
+  ssh -f -N -L 2222:192.168.8.141:22 t1
+  sleep 1
+fi
+echo "Tunnel on 127.0.0.1:2222 ready"
+"""
+
+[tasks.setup-device]
+depends = ["tunnel"]
+description = "Configure ares-cli device c1 pointing to local tunnel"
+run = """
+ares-setup-device --remove c1 2>/dev/null || true
+ares-setup-device --add c1 -i host=127.0.0.1 -i port=2222 -i user=root -i privatekey=id_ed25519 -i default=true
+"""
+
+[tasks.package]
+depends = ["build"]
+description = "Package dist/ into an IPK under build/"
+run = "rm -rf build && mkdir build && ares-package -o build dist"
+
+[tasks.deploy]
+depends = ["tunnel", "setup-device", "package"]
+description = "Install and launch Headroom on the TV, then push data"
+run = """
+ares-install --device c1 build/org.vararu.headroom_*.ipk
+ares-launch --device c1 org.vararu.headroom
+mise push
+"""
+
+[tasks.inspect]
+depends = ["tunnel", "setup-device"]
+description = "Inspect Headroom running on the TV"
+run = "ares-inspect --device c1 --app org.vararu.headroom --open"
+
+[tasks.screenshot]
+description = "Capture a 1920x1080 screenshot from the TV"
+run = """
+ssh tv "luna-send -n 1 -f 'luna://com.webos.service.capture/executeOneShot' '{\\"path\\":\\"/tmp/headroom.png\\",\\"format\\":\\"png\\",\\"width\\":1920,\\"height\\":1080}'"
+scp tv:/tmp/headroom.png ./screenshot.png
+echo "Screenshot saved to ./screenshot.png"
+"""
