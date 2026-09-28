@@ -20,9 +20,9 @@ export function mapKey(keyCode: number): RemoteAction | null {
 
 export function initScreenSaverBridge(clientName: string): void {
   const w = window as unknown as Record<string, unknown>;
-  if (typeof w.WebOSServiceBridge === "undefined") return;
+  if (typeof w["WebOSServiceBridge"] === "undefined") return;
   try {
-    const Ctor = w.WebOSServiceBridge as new () => {
+    const Ctor = w["WebOSServiceBridge"] as new () => {
       onservicecallback: ((msg: string) => void) | null;
       call(uri: string, params: string): void;
     };

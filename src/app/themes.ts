@@ -26,9 +26,12 @@ export function themeVars(name: string): Record<string, string> {
   const theme = THEMES.find((t) => t.name === name);
   if (!theme) return { ...VANTABLACK_VARS };
   const vars: Record<string, string> = {};
-  for (const [cssVar, themeKey] of VAR_KEYS)
-    vars[cssVar] = theme.colors[themeKey];
-  vars["--fg-rgb"] = hexToRgb(vars["--fg"]);
+  for (const [cssVar, themeKey] of VAR_KEYS) {
+    const v = theme.colors[themeKey];
+    if (v !== undefined) vars[cssVar] = v;
+  }
+  const fg = vars["--fg"];
+  if (fg !== undefined) vars["--fg-rgb"] = hexToRgb(fg);
   return vars;
 }
 
@@ -65,7 +68,8 @@ export function saveTheme(
 
 export function stepTheme(name: string, step: 1 | -1): string {
   const i = THEMES.findIndex((t) => t.name === name);
-  return THEMES[(i + step + THEMES.length) % THEMES.length].name;
+  const next = THEMES[(i + step + THEMES.length) % THEMES.length];
+  return next === undefined ? "vantablack" : next.name;
 }
 
 export function applyTheme(
@@ -73,5 +77,8 @@ export function applyTheme(
   name: string,
 ): void {
   const vars = themeVars(name);
-  for (const key of Object.keys(vars)) el.style.setProperty(key, vars[key]);
+  for (const key of Object.keys(vars)) {
+    const v = vars[key];
+    if (v !== undefined) el.style.setProperty(key, v);
+  }
 }

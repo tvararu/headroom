@@ -9,8 +9,10 @@ for (let n = 0; n < 256; n++) {
 
 function crc32(data: Uint8Array): number {
   let crc = 0xffffffff;
-  for (let i = 0; i < data.length; i++)
-    crc = CRC_TABLE[(crc ^ data[i]) & 0xff] ^ (crc >>> 8);
+  for (let i = 0; i < data.length; i++) {
+    const t = CRC_TABLE[(crc ^ (data[i] ?? 0)) & 0xff] ?? 0;
+    crc = t ^ (crc >>> 8);
+  }
   return (crc ^ 0xffffffff) >>> 0;
 }
 
@@ -18,7 +20,7 @@ function chunk(type: string, data: Uint8Array): Uint8Array {
   const out = new Uint8Array(12 + data.length);
   const view = new DataView(out.buffer);
   view.setUint32(0, data.length);
-  for (let i = 0; i < 4; i++) out[4 + i] = type.charCodeAt(i);
+  for (let i = 0; i < 4; i++) out[4 + i] = type.charCodeAt(i) ?? 0;
   out.set(data, 8);
   view.setUint32(8 + data.length, crc32(out.subarray(4, 8 + data.length)));
   return out;
@@ -48,11 +50,14 @@ function buildPng(size: number): Uint8Array {
         const fx = (x - 2) / (size - 4);
         const fy = (y - 2) / (size - 4);
         const row = fy < 0.36 ? 0 : fy < 0.63 ? 1 : fy < 0.9 ? 2 : -1;
-        if (row >= 0 && fx < barWidths[row]) rgb = barColors[row];
+        if (row >= 0 && fx < (barWidths[row] ?? 1)) {
+          const c = barColors[row];
+          if (c !== undefined) rgb = c;
+        }
       }
-      rows[o] = rgb[0];
-      rows[o + 1] = rgb[1];
-      rows[o + 2] = rgb[2];
+      rows[o] = rgb[0] ?? 0;
+      rows[o + 1] = rgb[1] ?? 0;
+      rows[o + 2] = rgb[2] ?? 0;
     }
   }
   const ihdr = new Uint8Array(13);

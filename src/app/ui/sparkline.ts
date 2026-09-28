@@ -8,8 +8,11 @@ export function sparkline(
     `<svg class="${isUrgent ? "ui-spark is-urgent" : "ui-spark"}" width="` +
     `${width}" height="${height}" viewBox="0 0 ${width} ${height}">`;
   if (history.length < 2) return `${open}</svg>`;
-  const start = history[0][0];
-  const span = Math.max(history[history.length - 1][0] - start, 1);
+  const first = history[0];
+  if (!first) return `${open}</svg>`;
+  const start = first[0];
+  const last = history[history.length - 1];
+  const span = Math.max((last ? last[0] : start) - start, 1);
   const pts: string[] = [];
   for (const [t, f] of history) {
     const x = ((t - start) / span) * width;

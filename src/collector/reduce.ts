@@ -151,7 +151,7 @@ export function reduce(
       return {
         id,
         name: providerName(id),
-        plan: accounts[0].report.metadata.planType ?? null,
+        plan: accounts[0]?.report.metadata.planType ?? null,
         fetchedAt: Math.max(...accounts.map((a) => a.report.fetchedAt)),
         limitReached: accounts.some(
           (a) => a.report.metadata.limitReached === true,

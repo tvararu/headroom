@@ -2,12 +2,12 @@ import { describe, expect, test } from "bun:test";
 import {
   age,
   countdown,
-  hintVisible,
   HINT_VISIBLE_MS,
+  hintVisible,
   pct,
   resetsText,
   urgent,
-} from "../src/app/format";
+} from "./format";
 
 describe("countdown", () => {
   test("zero or negative is now", () => {

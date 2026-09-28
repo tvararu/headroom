@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
-import { THEMES } from "../src/app/themes.generated";
-import { themeVars, THEME_NAMES } from "../src/app/themes";
+import { THEME_NAMES, themeVars } from "./themes";
+import { THEMES } from "./themes.generated";
 
 const EXPECTED_VARS = [
   "--bg",

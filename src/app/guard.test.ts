@@ -1,8 +1,7 @@
 import { describe, expect, test } from "bun:test";
-import { DIM_MS, dimmed, layoutAt, PIN_MS, pinLayout } from "../src/app/guard";
-import { stepTheme } from "../src/app/themes";
-import { THEMES } from "../src/app/themes.generated";
-import { mapKey } from "../src/app/webos";
+import { DIM_MS, dimmed, layoutAt, PIN_MS, pinLayout } from "./guard";
+import { stepTheme, THEME_NAMES } from "./themes";
+import { mapKey } from "./webos";
 
 describe("layoutAt", () => {
   test("flips at every minute boundary", () => {
@@ -41,8 +40,8 @@ describe("remote keys", () => {
 
 describe("stepTheme", () => {
   test("wraps in both directions", () => {
-    const first = THEMES[0].name;
-    const last = THEMES[THEMES.length - 1].name;
+    const first = THEME_NAMES[0] ?? "vantablack";
+    const last = THEME_NAMES[THEME_NAMES.length - 1] ?? "vantablack";
     expect(stepTheme(first, -1)).toBe(last);
     expect(stepTheme(last, 1)).toBe(first);
     expect(stepTheme(stepTheme(first, 1), -1)).toBe(first);

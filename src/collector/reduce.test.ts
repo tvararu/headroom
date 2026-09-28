@@ -1,11 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import { join } from "node:path";
-import {
-  reduce,
-  windowShort,
-  type OmpHistory,
-  type OmpUsage,
-} from "../src/collector/reduce";
+import { type OmpHistory, type OmpUsage, reduce, windowShort } from "./reduce";
 
 const dir = join(import.meta.dir, "fixtures");
 const usage: OmpUsage = await Bun.file(join(dir, "usage.json")).json();
