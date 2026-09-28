@@ -1,7 +1,13 @@
 import type { HeadroomData } from "../shared/schema";
 import { dimmed, layoutAt, orbitAt, toggleOverride } from "./guard";
 import type { Layout, LayoutOverride } from "./guard";
-import { freshness, renderAlerts, renderBarHtml, renderMain } from "./render";
+import {
+  freshness,
+  mainRowsClass,
+  renderAlerts,
+  renderBarHtml,
+  renderMain,
+} from "./render";
 import { applyTheme, loadTheme, nextTheme, saveTheme } from "./themes";
 import { initScreenSaverBridge, loadJson, mapKey } from "./webos";
 
@@ -89,6 +95,7 @@ function tick(): void {
   if (mainKey !== lastRenderMainKey) {
     lastRenderMainKey = mainKey;
     main.innerHTML = renderMain(data, layout, nowMs);
+    main.className = mainRowsClass(data ? data.providers.length : 0);
   }
   const alertsKey = `${data ? String(data.generatedAt) : "none"}|${minute}`;
   if (alertsKey !== lastRenderAlertsKey) {
@@ -100,14 +107,14 @@ function tick(): void {
 
 function onKey(e: KeyboardEvent): void {
   const nowMs = Date.now();
-  const action = mapKey(e.keyCode);
-  if (action === null) return;
   if (dimmed(nowMs, lastKeyAt)) {
     lastKeyAt = nowMs;
     e.preventDefault();
     return;
   }
   lastKeyAt = nowMs;
+  const action = mapKey(e.keyCode);
+  if (action === null) return;
   if (action === "layout") {
     layoutOverride = toggleOverride(nowMs, layout);
     layout = layoutAt(nowMs, layoutOverride);

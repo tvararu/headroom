@@ -269,7 +269,7 @@ export function renderList(data: HeadroomData, now: number): string {
           '<td><span class="wchip">' +
           esc(l.windowShort) +
           "</span></td>" +
-          "<td>" +
+          '<td class="tlabel">' +
           esc(l.label) +
           "</td>" +
           '<td class="tbar sev-' +
@@ -295,6 +295,10 @@ export function renderList(data: HeadroomData, now: number): string {
   }
   rows.push("</table>");
   return rows.join("");
+}
+
+export function mainRowsClass(count: number): string {
+  return count <= 2 ? "rows-1" : "rows-2";
 }
 
 export function renderMain(

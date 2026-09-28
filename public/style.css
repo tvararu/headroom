@@ -38,11 +38,11 @@ body {
 #root.list {
   grid-template-rows: 1fr auto 52px;
 }
-#root.list #main { grid-row: 1; }
+#root.list #main { grid-row: 1; display: block; }
+#root.list #main table.list { width: 100%; }
 #root.list #alerts { grid-row: 2; }
 #root.list #bar { grid-row: 3; }
 #root.dim { opacity: 0.45; }
-
 #bar {
   display: grid;
   grid-template-columns: 1fr auto 1fr;
@@ -94,7 +94,9 @@ body {
   overflow: hidden;
   min-height: 0;
 }
-
+#main.rows-1 {
+  grid-template-rows: minmax(0, 1fr);
+}
 .tile {
   position: relative;
   border: 2px solid var(--border-idle);
@@ -161,12 +163,12 @@ body {
 .spark .area { fill-opacity: 0.25; }
 .spark .stroke { fill: none; stroke-width: 2; }
 
-table.list { width: 100%; border-collapse: collapse; font-size: 20px; }
-table.list td { padding: 3px 12px 3px 0; vertical-align: middle; white-space: nowrap; }
+table.list { width: 100%; border-collapse: collapse; font-size: 26px; }
+table.list td { padding: 6px 16px 6px 0; vertical-align: middle; white-space: nowrap; }
+table.list td.tlabel { width: 99%; }
 table.list tr + tr td { border-top: 1px solid var(--muted); }
 table.list tr.group td { border-top: 2px solid var(--accent); }
-.tbar { font-size: 18px; letter-spacing: 1px; }
-
+.tbar { font-size: 22px; letter-spacing: 1px; }
 .empty {
   grid-column: 1 / -1;
   align-self: center;

@@ -6,6 +6,7 @@ import {
   esc,
   fmtUsed,
   freshness,
+  mainRowsClass,
   renderMain,
   renderTiles,
   tileSpans,
@@ -148,5 +149,15 @@ describe("tileTitle", () => {
     expect(renderTiles(d, Date.now())).not.toContain(
       "OpenCode Go \u00b7 OpenCode Go",
     );
+  });
+});
+
+describe("mainRowsClass", () => {
+  test("2 providers yield the one-row class", () => {
+    expect(mainRowsClass(0)).toBe("rows-1");
+    expect(mainRowsClass(1)).toBe("rows-1");
+    expect(mainRowsClass(2)).toBe("rows-1");
+    expect(mainRowsClass(3)).toBe("rows-2");
+    expect(mainRowsClass(5)).toBe("rows-2");
   });
 });
