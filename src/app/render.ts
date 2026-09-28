@@ -55,6 +55,13 @@ export function activeProvider(data: HeadroomData): string | null {
 
 export type FreshState = "live" | "stale" | "crit";
 
+export function dataAge(data: HeadroomData): number {
+  return data.providers.reduce(
+    (oldest, p) => Math.min(oldest, p.fetchedAt),
+    data.generatedAt,
+  );
+}
+
 export function freshness(
   generatedAt: number | null,
   now: number,

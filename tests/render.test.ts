@@ -3,6 +3,7 @@ import type { HeadroomData, LimitView } from "../src/app/../shared/schema";
 import {
   activeProvider,
   capacityText,
+  dataAge,
   esc,
   fmtUsed,
   freshness,
@@ -94,6 +95,12 @@ describe("freshness", () => {
   });
   test("waiting state with no data", () => {
     expect(freshness(null, now).text).toBe("waiting for data");
+  });
+  test("data age is the oldest provider fetch, not the push time", () => {
+    const d = sample();
+    d.generatedAt = now;
+    d.providers[0].fetchedAt = now - 20 * 60 * 1000;
+    expect(freshness(dataAge(d), now).state).toBe("stale");
   });
 });
 

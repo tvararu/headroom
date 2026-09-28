@@ -2,6 +2,7 @@ import type { HeadroomData } from "../shared/schema";
 import { dimmed, layoutAt, orbitAt, toggleOverride } from "./guard";
 import type { Layout, LayoutOverride } from "./guard";
 import {
+  dataAge,
   freshness,
   mainRowsClass,
   renderAlerts,
@@ -75,7 +76,7 @@ function tick(): void {
   if (dimmed(nowMs, lastKeyAt)) root.classList.add("dim");
   else root.classList.remove("dim");
 
-  const fresh = freshness(data ? data.generatedAt : null, nowMs);
+  const fresh = freshness(data ? dataAge(data) : null, nowMs);
   const freshCls =
     fresh.state === "live"
       ? "fresh-live"
