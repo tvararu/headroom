@@ -29,8 +29,20 @@ names or error causes. Tests enforce this.
 - CSS the TV lacks: flex `gap` (84), `inset` (87), `aspect-ratio` (88),
   `:is()`/`:where()` (88). Grid `gap`, custom properties and SVG are fine.
 - DOM renders at the manifest's 1920x1080.
-- `ares-install` replaces the app dir, so it wipes `data/`. `mise deploy` runs
+- Installing replaces the app dir, so it wipes `data/`. `mise deploy` runs
   `mise push` afterwards for this reason.
+- `mise deploy` does not use `ares-install`. That command uploads the IPK over
+  the t1 tunnel and then fails with `Unable to exec`: ares-cli's ssh2 library
+  cannot open an exec channel there, although OpenSSH can (seen 2026-09-28).
+  `scripts/tv.ts` instead copies the IPK with `scp tv:` and calls
+  `com.webos.appInstallService/dev/install` through `ssh tv`.
+- `luna-send` prints nothing when its stdin or stdout is the ssh channel. Run
+  it with `</dev/null` and pipe its output, as `scripts/tv.ts` does.
+- The font has no glyphs outside the Nerd Font set plus its own blocks, and the
+  TV has no fallback font. U+25AE rendered as an empty box. Check new symbols
+  on the TV itself, because a desktop browser falls back silently.
+- `mise screenshot` captures the DOM (luna `capture/executeOneShot`), so it is
+  valid visual proof for this app.
 
 ## Burn-in guards
 

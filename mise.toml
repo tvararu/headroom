@@ -79,11 +79,11 @@ description = "Package dist/ into an IPK under build/"
 run = "rm -rf build && mkdir build && ares-package -o build dist"
 
 [tasks.deploy]
-depends = ["tunnel", "setup-device", "package"]
+depends = ["package"]
 description = "Install and launch Headroom on the TV, then push data"
 run = """
-ares-install --device c1 build/org.vararu.headroom_*.ipk
-ares-launch --device c1 org.vararu.headroom
+bun scripts/tv.ts deploy
+bun scripts/tv.ts launch
 mise push
 """
 
@@ -94,8 +94,4 @@ run = "ares-inspect --device c1 --app org.vararu.headroom --open"
 
 [tasks.screenshot]
 description = "Capture a 1920x1080 screenshot from the TV"
-run = """
-ssh tv "luna-send -n 1 -f 'luna://com.webos.service.capture/executeOneShot' '{\\"path\\":\\"/tmp/headroom.png\\",\\"format\\":\\"png\\",\\"width\\":1920,\\"height\\":1080}'"
-scp tv:/tmp/headroom.png ./screenshot.png
-echo "Screenshot saved to ./screenshot.png"
-"""
+run = "bun scripts/tv.ts screenshot"
