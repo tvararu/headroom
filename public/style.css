@@ -176,3 +176,4 @@ table.list tr.group td { border-top: 2px solid var(--accent); }
   color: var(--fg-dim);
   font-size: 28px;
 }
+#root.list #main .empty { display: block; text-align: center; padding-top: 440px; }
