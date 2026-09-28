@@ -1,7 +1,13 @@
 import { readdirSync } from "node:fs";
+import { APP_ID, missingTvMessage, TV_ENV } from "../src/shared/app";
 
-const APP_ID = "org.vararu.headroom";
 const TEMP = "/media/developer/temp";
+
+const TV: string = Bun.env[TV_ENV] ?? "";
+if (TV === "") {
+  console.error(missingTvMessage());
+  process.exit(2);
+}
 
 // luna-send prints nothing when its stdin or stdout is the ssh channel itself.
 function luna(uri: string, payload: object, until?: string): string {
@@ -26,14 +32,18 @@ async function sh(cmd: string[]): Promise<string> {
   return out;
 }
 
+function targetPath(path: string): string {
+  return `${TV}:${path}`;
+}
+
 async function deploy(): Promise<void> {
   const ipk = readdirSync("build").find((f) => f.endsWith(".ipk"));
   if (!ipk) throw new Error("tv: no .ipk in build/, run mise package");
-  await sh(["scp", "-q", `build/${ipk}`, `tv:${TEMP}/${ipk}`]);
+  await sh(["scp", "-q", `build/${ipk}`, targetPath(`${TEMP}/${ipk}`)]);
   try {
     const out = await sh([
       "ssh",
-      "tv",
+      TV,
       luna(
         "com.webos.appInstallService/dev/install",
         { id: APP_ID, ipkUrl: `${TEMP}/${ipk}`, subscribe: true },
@@ -44,7 +54,7 @@ async function deploy(): Promise<void> {
       throw new Error(`tv: install did not report installed:\n${out}`);
     }
   } finally {
-    await sh(["ssh", "tv", `rm -f ${TEMP}/${ipk}`]).catch(() => {});
+    await sh(["ssh", TV, `rm -f ${TEMP}/${ipk}`]).catch(() => {});
   }
   console.log(`installed ${ipk}`);
 }
@@ -52,7 +62,7 @@ async function deploy(): Promise<void> {
 async function launch(): Promise<void> {
   const out = await sh([
     "ssh",
-    "tv",
+    TV,
     luna("com.webos.applicationManager/launch", { id: APP_ID }),
   ]);
   if (!out.includes('"returnValue":true')) {
@@ -61,10 +71,10 @@ async function launch(): Promise<void> {
   console.log(`launched ${APP_ID}`);
 }
 
-async function screenshot(): Promise<void> {
+async function screenshot(outPath?: string): Promise<void> {
   const out = await sh([
     "ssh",
-    "tv",
+    TV,
     luna("com.webos.service.capture/executeOneShot", {
       path: "/tmp/headroom.png",
       format: "png",
@@ -75,20 +85,32 @@ async function screenshot(): Promise<void> {
   if (!out.includes('"returnValue":true')) {
     throw new Error(`tv: capture failed: ${out}`);
   }
-  await sh(["scp", "-q", "tv:/tmp/headroom.png", "screenshot.png"]);
-  console.log("saved screenshot.png");
+  const dest = outPath ?? "docs/tiles.png";
+  await sh(["scp", "-q", targetPath("/tmp/headroom.png"), dest]);
+  console.log(`saved ${dest}`);
 }
 
-const commands: Record<string, () => Promise<void>> = {
+async function inspect(): Promise<void> {
+  // The webOS inspector listens on port 9998; forward it for local devtools.
+  const proc = Bun.spawn(["ssh", "-N", "-L", "9998:localhost:9998", TV], {
+    stdout: "inherit",
+    stderr: "inherit",
+  });
+  console.log("devtools: http://localhost:9998/ (Ctrl-C to close)");
+  await proc.exited;
+}
+
+const commands: Record<string, (arg?: string) => Promise<void>> = {
   deploy,
   launch,
   screenshot,
+  inspect,
 };
 const command = commands[process.argv[2] ?? ""];
 if (!command) {
   console.error(
-    `usage: bun scripts/tv.ts <${Object.keys(commands).join("|")}>`,
+    `usage: bun scripts/tv.ts <${Object.keys(commands).join("|")}> [path]`,
   );
   process.exit(2);
 }
-await command();
+await command(process.argv[3]);

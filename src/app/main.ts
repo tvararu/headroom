@@ -1,6 +1,8 @@
+import { APP_ID } from "../shared/app";
 import type { HeadroomData } from "../shared/schema";
-import { dimmed, layoutAt, pinLayout } from "./guard";
+import { hintVisible } from "./format";
 import type { Layout, LayoutOverride } from "./guard";
+import { dimmed, layoutAt, pinLayout } from "./guard";
 import {
   dataAge,
   freshness,
@@ -9,7 +11,6 @@ import {
   renderBarHtml,
   renderMain,
 } from "./render";
-import { hintVisible } from "./format";
 import { applyTheme, loadTheme, saveTheme, stepTheme } from "./themes";
 import { initScreenSaverBridge, loadJson, mapKey } from "./webos";
 
@@ -142,7 +143,7 @@ function boot(): void {
     const r = document.getElementById("root");
     if (r) r.classList.add("list");
   }
-  initScreenSaverBridge("org.vararu.headroom");
+  initScreenSaverBridge(APP_ID);
   document.addEventListener("keydown", onKey);
   reload();
   setInterval(reload, RELOAD_MS);

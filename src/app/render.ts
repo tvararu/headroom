@@ -203,7 +203,7 @@ export function renderTiles(data: HeadroomData, now: number): string {
           separator() +
           sectionHeader("LIMITS") +
           '<div class="ui-limits">' +
-          p.limits.map((l, j) => limitRow(l, suffixes[j], now)).join("") +
+          p.limits.map((l, j) => limitRow(l, suffixes[j] ?? "", now)).join("") +
           "</div>" +
           (p.capacity.length > 0
             ? `<div class="ui-foot">${esc(capacityText(p.capacity))}</div>`
@@ -227,7 +227,7 @@ export function renderList(data: HeadroomData, now: number): string {
       const pctText = (isUrgent ? "\u25b2 " : "") + pct(l.usedFraction);
       parts.push(
         '<div class="ui-lrow"><div class="ui-label">' +
-          labelHtml(l, suffixes[j]) +
+          labelHtml(l, suffixes[j] ?? "") +
           `</div><div class="ui-lmeter${cls}">` +
           meter(l.usedFraction, isUrgent) +
           `</div><div class="ui-pct${cls}">` +
@@ -254,7 +254,7 @@ export function renderMain(
   now: number,
 ): string {
   if (!data || data.providers.length === 0) {
-    return '<div class="ui-empty">headroom \u00b7 waiting for data from openhubris</div>';
+    return '<div class="ui-empty">headroom \u00b7 waiting for data</div>';
   }
   if (layout === "list") return renderList(data, now);
   return renderTiles(data, now);

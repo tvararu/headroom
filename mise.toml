@@ -1,6 +1,6 @@
 [tools]
 bun = "latest"
-hk = "1.38.0"
+hk = "latest"
 node = "22"
 pkl = "latest"
 "npm:@biomejs/biome" = "latest"
@@ -54,25 +54,6 @@ run = "bun src/collector/push.ts"
 description = "Preview dist/ on :3010"
 run = "bun scripts/serve.ts"
 
-[tasks.tunnel]
-description = "Ensure local SSH tunnel to TV port 22 is active"
-run = """
-if ! nc -z 127.0.0.1 2222; then
-  echo "Opening SSH tunnel to TV:22 via t1..."
-  ssh -f -N -L 2222:192.168.8.141:22 t1
-  sleep 1
-fi
-echo "Tunnel on 127.0.0.1:2222 ready"
-"""
-
-[tasks.setup-device]
-depends = ["tunnel"]
-description = "Configure ares-cli device c1 pointing to local tunnel"
-run = """
-ares-setup-device --remove c1 2>/dev/null || true
-ares-setup-device --add c1 -i host=127.0.0.1 -i port=2222 -i user=root -i privatekey=id_ed25519 -i default=true
-"""
-
 [tasks.package]
 depends = ["build"]
 description = "Package dist/ into an IPK under build/"
@@ -88,10 +69,30 @@ mise push
 """
 
 [tasks.inspect]
-depends = ["tunnel", "setup-device"]
-description = "Inspect Headroom running on the TV"
-run = "ares-inspect --device c1 --app org.vararu.headroom --open"
+description = "Forward the TV inspector (devtools on :9998)"
+run = "bun scripts/tv.ts inspect"
 
 [tasks.screenshot]
-description = "Capture a 1920x1080 screenshot from the TV"
+description = "Capture a 1920x1080 screenshot from the TV into docs/"
 run = "bun scripts/tv.ts screenshot"
+
+[tasks.main]
+description = "Switch to main, pull, and clean up merged branches"
+run = '''
+set -e
+git checkout main
+git pull --rebase
+git fetch --prune
+
+cleaned=0
+for branch in $(git branch -vv | grep ': gone]' | sed 's/^[*+] /  /' | awk '{print $1}'); do
+  git branch -D "$branch"
+  cleaned=$((cleaned + 1))
+done
+
+if [ "$cleaned" -gt 0 ]; then
+  echo "Cleaned up ${cleaned} merged branch(es)"
+else
+  echo "No stale branches to clean up"
+fi
+'''

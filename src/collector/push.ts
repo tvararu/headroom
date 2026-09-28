@@ -1,4 +1,5 @@
-import { reduce, type OmpHistory, type OmpUsage } from "./reduce";
+import { APP_DIR, missingTvMessage, TV_ENV } from "../shared/app";
+import { type OmpHistory, type OmpUsage, reduce } from "./reduce";
 
 export interface RunResult {
   code: number;
@@ -8,8 +9,7 @@ export interface RunResult {
 
 export type Runner = (cmd: string[], stdin?: string) => Promise<RunResult>;
 
-const SSH_CMD =
-  "d=/media/developer/apps/usr/palm/applications/org.vararu.headroom/data; mkdir -p $d && cat > $d/usage.json.tmp && mv $d/usage.json.tmp $d/usage.json";
+const SSH_CMD = `d=${APP_DIR}/data; mkdir -p $d && cat > $d/usage.json.tmp && mv $d/usage.json.tmp $d/usage.json`;
 
 export async function defaultRun(
   cmd: string[],
@@ -29,16 +29,23 @@ export async function defaultRun(
 }
 
 function failLine(text: string): string {
-  const line = text.split("\n")[0].trim();
+  const first = text.split("\n")[0];
+  const line = (first ?? "").trim();
   return line === "" ? "invalid JSON" : line;
 }
 
-export async function main(argv: string[], run: Runner): Promise<number> {
+export async function main(
+  argv: string[],
+  run: Runner,
+  tv: string | null = Bun.env[TV_ENV] ?? null, // eslint-disable-line
+): Promise<number> {
   let out: string | null = null;
   let dryRun = false;
   for (let i = 0; i < argv.length; i++) {
-    if (argv[i] === "--out" && i + 1 < argv.length) out = argv[++i];
-    else if (argv[i] === "--dry-run") dryRun = true;
+    if (argv[i] === "--out" && i + 1 < argv.length) {
+      i++;
+      out = argv[i] ?? null;
+    } else if (argv[i] === "--dry-run") dryRun = true;
   }
   const [usageRes, historyRes] = await Promise.all([
     run(["omp", "usage", "--json"]),
@@ -68,8 +75,12 @@ export async function main(argv: string[], run: Runner): Promise<number> {
     );
     return 0;
   }
+  if (!tv) {
+    console.error(missingTvMessage());
+    return 2;
+  }
   const push = await run(
-    ["ssh", "-o", "ConnectTimeout=10", "-o", "BatchMode=yes", "tv", SSH_CMD],
+    ["ssh", "-o", "ConnectTimeout=10", "-o", "BatchMode=yes", tv, SSH_CMD],
     json,
   );
   if (push.code === 255) {
