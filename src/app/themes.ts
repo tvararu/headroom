@@ -4,29 +4,20 @@ export const THEME_NAMES: string[] = THEMES.map((t) => t.name);
 
 export const VANTABLACK_VARS: Record<string, string> = {
   "--bg": "#000000",
-  "--bg-alt": "#090909",
   "--fg": "#ffffff",
   "--fg-dim": "#505050",
-  "--fg-bright": "#ffffff",
+  "--fg-rgb": "255, 255, 255",
   "--accent": "#8d8d8d",
   "--muted": "#7a7a7a",
-  "--border-idle": "#1a1a1a",
-  "--ok": "#7a7a7a",
-  "--warn": "#cecece",
   "--crit": "#ffffff",
 };
 
 const VAR_KEYS: [string, keyof (typeof THEMES)[0]["colors"]][] = [
   ["--bg", "background"],
-  ["--bg-alt", "dark_background"],
   ["--fg", "foreground"],
   ["--fg-dim", "dark_foreground"],
-  ["--fg-bright", "bright_foreground"],
   ["--accent", "accent"],
   ["--muted", "muted"],
-  ["--border-idle", "selection"],
-  ["--ok", "green"],
-  ["--warn", "yellow"],
   ["--crit", "red"],
 ];
 
@@ -37,7 +28,16 @@ export function themeVars(name: string): Record<string, string> {
   const vars: Record<string, string> = {};
   for (const [cssVar, themeKey] of VAR_KEYS)
     vars[cssVar] = theme.colors[themeKey];
+  vars["--fg-rgb"] = hexToRgb(vars["--fg"]);
   return vars;
+}
+
+function hexToRgb(hex: string): string {
+  const h = hex.replace("#", "");
+  const r = parseInt(h.slice(0, 2), 16);
+  const g = parseInt(h.slice(2, 4), 16);
+  const b = parseInt(h.slice(4, 6), 16);
+  return `${r}, ${g}, ${b}`;
 }
 
 const STORAGE_KEY = "headroom.theme";

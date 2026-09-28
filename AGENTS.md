@@ -55,8 +55,20 @@ The app blocks the TV screensaver, so it guards the OLED itself (`src/app/guard.
 ## Remote
 
 `1` and `2` jump to tiles or list, and OK toggles them. Each holds the chosen
-layout for 10 min, then the minute rotation resumes. CH+ and any colour button
-go to the next theme, CH− to the previous one. Back exits.
+layout for 10 min, then the minute rotation resumes. ◀/▶ and any colour
+button step the theme back/forward. CH+/CH− are reserved for switching
+dashboards later and do nothing with one dashboard. Back exits.
+
+## Assets
+
+`public/marks/anthropic.svg` and `public/marks/openai-codex.svg` are copied
+from `~/code/omarchy/shell/plugins/agents/assets` (Omarchy, MIT-style
+licence, (c) David Heinemeier Hansson). `public/marks/xai.svg` and
+`public/marks/google-antigravity.svg` are from Lobe Icons (MIT, (c) 2023
+LobeHub), with the `width`/`height`/`style` attributes removed and `fill`
+fixed to `#ffffff` for `<img>` display; the xAI title is corrected to `xAI`.
+OpenCode Go keeps the verified Nerd Font glyph: lobe-icons has no usable
+opencode mark.
 
 ## Commands
 

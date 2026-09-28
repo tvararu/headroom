@@ -4,20 +4,19 @@ import type {
   LimitView,
   ProviderView,
 } from "../shared/schema";
-import { age, countdown, pct, severity } from "./format";
+import { age, countdown, pct, resetsText, urgent } from "./format";
+import { esc } from "./ui/esc";
+import { hero } from "./ui/hero";
+import { keyHints } from "./ui/keyHint";
+import { meter } from "./ui/meter";
+import { panel } from "./ui/panel";
+import { sectionHeader } from "./ui/sectionHeader";
+import { separator } from "./ui/separator";
+import { sparkline } from "./ui/sparkline";
 
 export const GRID_COLS = 60;
 export const FRESH_STALE_MS = 900000;
 export const FRESH_CRIT_MS = 3600000;
-
-export function esc(s: string): string {
-  return s
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#39;");
-}
 
 export function tileSpans(n: number): number[][] {
   if (n <= 0) return [];
@@ -37,20 +36,6 @@ export function tileSpans(n: number): number[][] {
     return spans;
   };
   return [widths(row1), widths(n - row1)];
-}
-
-export function activeProvider(data: HeadroomData): string | null {
-  let best: string | null = null;
-  let bestFrac = -1;
-  for (const p of data.providers) {
-    for (const l of p.limits) {
-      if (l.usedFraction > bestFrac) {
-        bestFrac = l.usedFraction;
-        best = p.id;
-      }
-    }
-  }
-  return best;
 }
 
 export type FreshState = "live" | "stale" | "crit";
@@ -73,85 +58,33 @@ export function freshness(
   return { state: "live", text: `live ${age(ms)}` };
 }
 
-export function sparkline(
-  history: [number, number][],
-  width: number,
-  height: number,
-  cls: string,
-): string {
-  if (history.length < 2)
-    return (
-      '<svg class="' +
-      cls +
-      '" width="' +
-      width +
-      '" height="' +
-      height +
-      '"></svg>'
-    );
-  const start = history[0][0];
-  const end = history[history.length - 1][0];
-  const span = Math.max(end - start, 1);
-  const pts: string[] = [];
-  for (const [t, f] of history) {
-    const x = ((t - start) / span) * width;
-    const y = height - Math.min(Math.max(f, 0), 1) * height;
-    pts.push(`${x.toFixed(1)},${y.toFixed(1)}`);
-  }
-  const frac = history[history.length - 1][1];
-  const sev = severity(frac, "ok");
-  const d = `M0,${height} L${pts.join(" L")} L${width},${height} Z`;
-  return (
-    '<svg class="' +
-    cls +
-    '" width="' +
-    width +
-    '" height="' +
-    height +
-    '" viewBox="0 0 ' +
-    width +
-    " " +
-    height +
-    '">' +
-    '<path class="area sev-fill-' +
-    sev +
-    '" d="' +
-    d +
-    '"></path>' +
-    '<path class="stroke sev-stroke-' +
-    sev +
-    '" d="M' +
-    pts.join(" L") +
-    '"></path>' +
-    "</svg>"
-  );
-}
-
 export function renderBarHtml(
   layout: "tiles" | "list",
   clock: string,
   fresh: string,
   freshCls: string,
   theme: string,
+  hint: boolean,
 ): string {
-  const chip1 = layout === "tiles" ? "chip on" : "chip";
-  const chip2 = layout === "list" ? "chip on" : "chip";
+  const chip1 = layout === "tiles" ? "ui-view is-on" : "ui-view";
+  const chip2 = layout === "list" ? "ui-view is-on" : "ui-view";
   return (
-    '<div class="bar-left"><span class="logo">\u2582\u2584\u2586</span><span class="brand">headroom</span>' +
+    '<div class="ui-bar-left"><span class="ui-logo">\u2582\u2584\u2586</span><span class="ui-brand">headroom</span>' +
     '<span class="' +
     chip1 +
     '">1</span><span class="' +
     chip2 +
-    '">2</span></div>' +
-    '<div class="bar-center"><span class="clock">' +
+    '">2</span>' +
+    keyHints(hint) +
+    '</div><div class="ui-bar-center"><span class="ui-clock">' +
     esc(clock) +
     "</span></div>" +
-    '<div class="bar-right"><span class="fresh ' +
+    '<div class="ui-bar-right"><span class="ui-fresh ' +
     freshCls +
     '">\u25cf ' +
     esc(fresh) +
     "</span>" +
-    '<span class="theme">' +
+    '<span class="ui-theme">' +
     esc(theme) +
     "</span></div>"
   );
@@ -161,7 +94,7 @@ export function renderAlerts(alerts: Alert[]): string {
   return alerts
     .map(
       (a) =>
-        '<div class="alert">\u25b2 ' +
+        '<div class="ui-alert">\u25b2 ' +
         esc(a.name) +
         ": account disabled " +
         esc(age(Date.now() - a.sinceMs)) +
@@ -176,132 +109,139 @@ export function fmtUsed(used: number): string {
 export function capacityText(
   capacity: { window: string; used: number; total: number }[],
 ): string {
-  return (
-    "capacity " +
-    capacity
-      .map((c) => `${c.window} ${fmtUsed(c.used)}/${c.total}`)
-      .join(" \u00b7 ")
+  return capacity
+    .map((c) => `${c.window} ${fmtUsed(c.used)}/${c.total}`)
+    .join(" \u00b7 ");
+}
+
+const MARK_SVGS = [
+  "anthropic",
+  "openai-codex",
+  "google-antigravity",
+  "xai-oauth",
+];
+const MARK_FILES: Record<string, string> = {
+  "google-antigravity": "google-antigravity",
+  "xai-oauth": "xai",
+};
+const MARK_GLYPHS: Record<string, string> = {
+  "opencode-go": "\u{f018d}",
+};
+const DEFAULT_GLYPH = "\u{f06a9}";
+
+function mark(id: string): string {
+  if (MARK_SVGS.indexOf(id) >= 0)
+    return `<img class="ui-hero-mark" src="marks/${esc(MARK_FILES[id] || id)}.svg" alt="">`;
+  return `<span class="ui-hero-mark ui-glyph">${MARK_GLYPHS[id] || DEFAULT_GLYPH}</span>`;
+}
+
+export function planLine(p: ProviderView): string {
+  if (p.plan && p.plan.toLowerCase() !== p.name.toLowerCase()) return p.plan;
+  return `${p.limits.length} LIMITS`;
+}
+
+export function labelSuffixes(limits: LimitView[]): string[] {
+  return limits.map((l) =>
+    limits.some((o) => o !== l && o.label === l.label) ? l.windowShort : "",
   );
 }
 
-export function tileTitle(name: string, plan: string | null): string {
-  if (!plan || plan.toLowerCase() === name.toLowerCase()) return name;
-  return `${name} \u00b7 ${plan}`;
+function tileHero(p: ProviderView): string {
+  return hero(
+    mark(p.id),
+    p.name,
+    planLine(p),
+    p.limitReached ? "LIMIT" : "",
+    false,
+  );
 }
 
-function limitRowTiles(limit: LimitView, now: number): string {
-  const sev = severity(limit.usedFraction, limit.status);
+function listHero(p: ProviderView): string {
+  return hero(
+    mark(p.id),
+    p.name,
+    planLine(p),
+    p.limitReached ? "LIMIT" : "",
+    true,
+  );
+}
+
+function labelHtml(l: LimitView, suffix: string): string {
   return (
-    '<div class="limit"><div class="limit-top">' +
-    '<span class="wchip">' +
-    esc(limit.windowShort) +
+    esc(l.label) +
+    (suffix ? `<span class="ui-dim"> \u00b7 ${esc(suffix)}</span>` : "")
+  );
+}
+
+function limitRow(l: LimitView, suffix: string, now: number): string {
+  const isUrgent = urgent(l.usedFraction, l.status);
+  const resets = resetsText(l.resetsAt, now);
+  const cls = isUrgent ? "ui-limit is-urgent" : "ui-limit";
+  const pctText = (isUrgent ? "\u25b2 " : "") + pct(l.usedFraction);
+  return (
+    `<div class="${cls}"><div class="ui-row1"><span class="ui-label">` +
+    labelHtml(l, suffix) +
     "</span>" +
-    '<span class="llabel">' +
-    esc(limit.label) +
-    "</span>" +
-    '<span class="lpct sev-' +
-    sev +
-    '">' +
-    pct(limit.usedFraction) +
-    "</span>" +
-    '<span class="lcd">' +
-    esc(countdown(limit.resetsAt, now)) +
-    "</span>" +
-    "</div>" +
-    '<div class="limit-bottom"><div class="track"><div class="fill sev-' +
-    sev +
-    '" style="width:' +
-    pct(limit.usedFraction) +
-    '"></div></div>' +
-    sparkline(limit.history, 200, 40, "spark") +
+    (resets === "" ? "" : `<span class="ui-reset">${esc(resets)}</span>`) +
+    '<span class="ui-pct">' +
+    esc(pctText) +
+    "</span></div>" +
+    '<div class="ui-row2">' +
+    meter(l.usedFraction, isUrgent) +
+    sparkline(l.history, 140, 20, isUrgent) +
     "</div></div>"
   );
 }
 
 export function renderTiles(data: HeadroomData, now: number): string {
-  const spans = tileSpans(data.providers.length);
-  const active = activeProvider(data);
-  const flat: { provider: ProviderView; span: number }[] = [];
-  for (let r = 0; r < spans.length; r++) {
-    for (let c = 0; c < spans[r].length; c++) {
-      const p = data.providers[flat.length];
-      if (p) flat.push({ provider: p, span: spans[r][c] });
-    }
-  }
-  return flat
-    .map(({ provider: p, span }) => {
-      const cls = p.id === active ? "tile tile-active" : "tile";
-      const limits = p.limits.map((l) => limitRowTiles(l, now)).join("");
-      const cap = p.capacity.length > 0 ? capacityText(p.capacity) : "";
-      const flag = p.limitReached
-        ? ' <span class="limitflag">LIMIT</span>'
-        : "";
-      const title = esc(tileTitle(p.name, p.plan)) + flag;
-      return (
-        '<section class="' +
-        cls +
-        '" style="grid-column: span ' +
-        span +
-        '">' +
-        '<div class="tile-title"><span>' +
-        title +
-        "</span></div>" +
-        '<div class="tile-body">' +
-        limits +
-        "</div>" +
-        (cap ? `<div class="tile-foot">${esc(cap)}</div>` : "") +
-        "</section>"
+  const spans = ([] as number[]).concat(...tileSpans(data.providers.length));
+  return data.providers
+    .map((p, i) => {
+      const suffixes = labelSuffixes(p.limits);
+      return panel(
+        tileHero(p) +
+          separator() +
+          sectionHeader("LIMITS") +
+          '<div class="ui-limits">' +
+          p.limits.map((l, j) => limitRow(l, suffixes[j], now)).join("") +
+          "</div>" +
+          (p.capacity.length > 0
+            ? `<div class="ui-foot">${esc(capacityText(p.capacity))}</div>`
+            : ""),
+        `grid-column: span ${spans[i]}`,
       );
     })
     .join("");
 }
 
 export function renderList(data: HeadroomData, now: number): string {
-  const rows: string[] = ['<table class="list">'];
-  let first = true;
-  for (const p of data.providers) {
-    let providerCell = true;
-    for (const l of p.limits) {
-      const sev = severity(l.usedFraction, l.status);
-      const filled = Math.round(l.usedFraction * 40);
-      const bar =
-        "\u2588".repeat(Math.min(filled, 40)) +
-        "\u2591".repeat(Math.max(40 - filled, 0));
-      rows.push(
-        "<tr" +
-          (providerCell && !first ? ' class="group"' : "") +
-          "><td>" +
-          esc(providerCell ? tileTitle(p.name, p.plan) : "") +
-          "</td>" +
-          '<td><span class="wchip">' +
-          esc(l.windowShort) +
-          "</span></td>" +
-          '<td class="tlabel">' +
-          esc(l.label) +
-          "</td>" +
-          '<td class="tbar sev-' +
-          sev +
-          '">' +
-          esc(bar) +
-          "</td>" +
-          '<td class="sev-' +
-          sev +
-          '">' +
-          pct(l.usedFraction) +
-          "</td>" +
-          "<td>" +
-          esc(countdown(l.resetsAt, now)) +
-          "</td>" +
-          "<td>" +
-          sparkline(l.history, 240, 24, "spark") +
-          "</td></tr>",
+  const parts: string[] = ['<div class="ui-list">'];
+  data.providers.forEach((p, i) => {
+    if (i > 0) parts.push(separator());
+    parts.push(listHero(p));
+    const suffixes = labelSuffixes(p.limits);
+    p.limits.forEach((l, j) => {
+      const isUrgent = urgent(l.usedFraction, l.status);
+      const cls = isUrgent ? " is-urgent" : "";
+      const showReset = l.resetsAt !== null && l.resetsAt > now;
+      const pctText = (isUrgent ? "\u25b2 " : "") + pct(l.usedFraction);
+      parts.push(
+        '<div class="ui-lrow"><div class="ui-label">' +
+          labelHtml(l, suffixes[j]) +
+          `</div><div class="ui-lmeter${cls}">` +
+          meter(l.usedFraction, isUrgent) +
+          `</div><div class="ui-pct${cls}">` +
+          esc(pctText) +
+          '</div><div class="ui-reset">' +
+          (showReset ? esc(countdown((l.resetsAt as number) - now)) : "") +
+          "</div>" +
+          sparkline(l.history, 140, 24, isUrgent) +
+          "</div>",
       );
-      providerCell = false;
-    }
-    first = false;
-  }
-  rows.push("</table>");
-  return rows.join("");
+    });
+  });
+  parts.push("</div>");
+  return panel(parts.join(""), "");
 }
 
 export function mainRowsClass(count: number): string {
@@ -314,7 +254,7 @@ export function renderMain(
   now: number,
 ): string {
   if (!data || data.providers.length === 0) {
-    return '<div class="empty">headroom \u00b7 waiting for data from openhubris</div>';
+    return '<div class="ui-empty">headroom \u00b7 waiting for data from openhubris</div>';
   }
   if (layout === "list") return renderList(data, now);
   return renderTiles(data, now);

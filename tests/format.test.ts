@@ -1,46 +1,66 @@
 import { describe, expect, test } from "bun:test";
-import { age, countdown, pct, severity } from "../src/app/format";
+import {
+  age,
+  countdown,
+  hintVisible,
+  HINT_VISIBLE_MS,
+  pct,
+  resetsText,
+  urgent,
+} from "../src/app/format";
 
 describe("countdown", () => {
-  const now = 1000000000000;
-  test("null resetsAt", () => {
-    expect(countdown(null, now)).toBe("—");
-  });
-  test("past time is now", () => {
-    expect(countdown(now - 1000, now)).toBe("now");
-    expect(countdown(now, now)).toBe("now");
+  test("zero or negative is now", () => {
+    expect(countdown(0)).toBe("now");
+    expect(countdown(-1000)).toBe("now");
   });
   test("59m boundary", () => {
-    expect(countdown(now + 59 * 60000, now)).toBe("59m");
+    expect(countdown(59 * 60000)).toBe("59m");
   });
-  test("1h switches to hour format", () => {
-    expect(countdown(now + 3600000, now)).toBe("1h0m");
-    expect(countdown(now + 3 * 3600000 + 49 * 60000, now)).toBe("3h49m");
+  test("1h switches to spaced hour format", () => {
+    expect(countdown(3600000)).toBe("1h 0m");
+    expect(countdown(3 * 3600000 + 49 * 60000)).toBe("3h 49m");
   });
   test("23h59m stays hour format", () => {
-    expect(countdown(now + 23 * 3600000 + 59 * 60000, now)).toBe("23h59m");
+    expect(countdown(23 * 3600000 + 59 * 60000)).toBe("23h 59m");
   });
-  test("1d switches to day format", () => {
-    expect(countdown(now + 86400000, now)).toBe("1d0h");
-    expect(countdown(now + 5 * 86400000 + 10 * 3600000, now)).toBe("5d10h");
+  test("1d switches to spaced day format", () => {
+    expect(countdown(86400000)).toBe("1d 0h");
+    expect(countdown(5 * 86400000 + 10 * 3600000)).toBe("5d 10h");
   });
 });
 
-describe("severity", () => {
-  test("below warn", () => {
-    expect(severity(0.5999, "ok")).toBe("ok");
+describe("hintVisible", () => {
+  test("shows for 10s after a key, then hides", () => {
+    expect(HINT_VISIBLE_MS).toBe(10000);
+    expect(hintVisible(9000, 0)).toBe(true);
+    expect(hintVisible(9999, 0)).toBe(true);
+    expect(hintVisible(10000, 0)).toBe(false);
+    expect(hintVisible(50000, 40000)).toBe(false);
   });
-  test("warn threshold", () => {
-    expect(severity(0.6, "ok")).toBe("warn");
+});
+
+describe("resetsText", () => {
+  const now = 1000000000000;
+  test("future reset reads just the countdown", () => {
+    expect(resetsText(now + 2 * 3600000 + 3 * 60000, now)).toBe("2h 3m");
   });
-  test("below crit", () => {
-    expect(severity(0.8499, "ok")).toBe("warn");
+  test("null or past reset shows nothing", () => {
+    expect(resetsText(null, now)).toBe("");
+    expect(resetsText(now, now)).toBe("");
+    expect(resetsText(now - 1000, now)).toBe("");
   });
-  test("crit threshold", () => {
-    expect(severity(0.85, "ok")).toBe("crit");
+});
+
+describe("urgent", () => {
+  test("below threshold", () => {
+    expect(urgent(0.8999, "ok")).toBe(false);
   });
-  test("non-ok status is crit", () => {
-    expect(severity(0.1, "limited")).toBe("crit");
+  test("at threshold", () => {
+    expect(urgent(0.9, "ok")).toBe(true);
+  });
+  test("non-ok status is urgent", () => {
+    expect(urgent(0.1, "limited")).toBe(true);
   });
 });
 

@@ -1,18 +1,25 @@
 import { describe, expect, test } from "bun:test";
 import type { HeadroomData, LimitView } from "../src/app/../shared/schema";
 import {
-  activeProvider,
   capacityText,
   dataAge,
-  esc,
   fmtUsed,
   freshness,
+  labelSuffixes,
   mainRowsClass,
+  planLine,
   renderMain,
   renderTiles,
   tileSpans,
-  tileTitle,
 } from "../src/app/render";
+import { esc } from "../src/app/ui/esc";
+import { hero } from "../src/app/ui/hero";
+import { keyHint, keyHints } from "../src/app/ui/keyHint";
+import { meter } from "../src/app/ui/meter";
+import { panel } from "../src/app/ui/panel";
+import { sectionHeader } from "../src/app/ui/sectionHeader";
+import { separator } from "../src/app/ui/separator";
+import { sparkline } from "../src/app/ui/sparkline";
 
 function limit(over: Partial<LimitView> = {}): LimitView {
   return {
@@ -73,16 +80,31 @@ describe("tileSpans", () => {
   });
 });
 
-describe("escaping", () => {
+describe("components escape data", () => {
+  const evil = "<img src=x onerror=alert(1)>&\"'";
+  test("esc covers quotes", () => {
+    expect(esc(`a&<>"'`)).toBe("a&amp;&lt;&gt;&quot;&#39;");
+  });
+  test("panel, hero, header, meter, sparkline, keyHint escape", () => {
+    expect(panel(evil, "")).toBe(`<section class="ui-panel">${evil}</section>`);
+    const h = hero("", "<b>", evil, evil, false);
+    expect(h).not.toContain("<b>");
+    expect(h).toContain("&lt;b&gt;");
+    expect(sectionHeader(evil)).toContain("&amp;");
+    expect(meter(0.5, false)).toContain("width:50.0%");
+    expect(sparkline([], 200, 20, false)).toBe(
+      '<svg class="ui-spark" width="200" height="20" viewBox="0 0 200 20"></svg>',
+    );
+    expect(keyHint(evil, evil)).toContain("&lt;img");
+    expect(keyHints(false)).toContain("is-hidden");
+    expect(separator()).toBe('<div class="ui-sep"></div>');
+  });
   test("label html is escaped", () => {
     const d = sample();
     d.providers[0].limits = [limit({ label: "<img src=x onerror=alert(1)>" })];
     const html = renderTiles(d, Date.now());
     expect(html).not.toContain("<img");
     expect(html).toContain("&lt;img");
-  });
-  test("esc covers quotes", () => {
-    expect(esc(`a&<>"'`)).toBe("a&amp;&lt;&gt;&quot;&#39;");
   });
 });
 
@@ -115,13 +137,10 @@ describe("renderMain", () => {
       "waiting for data from openhubris",
     );
   });
-  test("highest-usage tile gets the active class", () => {
+  test("urgent rows mark the percentage with a triangle", () => {
     const html = renderTiles(sample(), Date.now());
-    expect(html).toContain("tile tile-active");
-    expect(html.indexOf("tile-active")).toBeLessThan(html.indexOf("Beta"));
-  });
-  test("activeProvider picks the provider with the max fraction", () => {
-    expect(activeProvider(sample())).toBe("a");
+    expect(html).toContain("\u25b2 90%");
+    expect(html).not.toContain("\u25b2 20%");
   });
 });
 
@@ -136,26 +155,36 @@ describe("capacityText", () => {
         { window: "7d", used: 0.67, total: 1 },
         { window: "7d fable", used: 0, total: 1 },
       ]),
-    ).toBe("capacity 5h 0.05/1 \u00b7 7d 0.67/1 \u00b7 7d fable 0/1");
+    ).toBe("5h 0.05/1 \u00b7 7d 0.67/1 \u00b7 7d fable 0/1");
   });
 });
 
-describe("tileTitle", () => {
-  test("omits plan when it equals the provider name", () => {
-    expect(tileTitle("OpenCode Go", "OpenCode Go")).toBe("OpenCode Go");
-    expect(tileTitle("OpenCode Go", "opencode go")).toBe("OpenCode Go");
-    expect(tileTitle("OpenAI Codex", "prolite")).toBe(
-      "OpenAI Codex \u00b7 prolite",
-    );
-    expect(tileTitle("xAI", null)).toBe("xAI");
+describe("planLine", () => {
+  test("uses the plan when it differs from the name", () => {
+    const p = sample().providers[0];
+    p.name = "OpenAI Codex";
+    p.plan = "prolite";
+    expect(planLine(p)).toBe("prolite");
   });
-  test("renderTiles omits the redundant plan suffix", () => {
-    const d = sample();
-    d.providers[0].name = "OpenCode Go";
-    d.providers[0].plan = "OpenCode Go";
-    expect(renderTiles(d, Date.now())).not.toContain(
-      "OpenCode Go \u00b7 OpenCode Go",
-    );
+  test("falls back to the limit count when plan is missing or equals the name", () => {
+    const p = sample().providers[0];
+    p.name = "OpenCode Go";
+    p.plan = "opencode go";
+    expect(planLine(p)).toBe("2 LIMITS");
+    p.plan = null;
+    expect(planLine(p)).toBe("2 LIMITS");
+  });
+});
+
+describe("labelSuffixes", () => {
+  test("only duplicate labels get their window", () => {
+    expect(
+      labelSuffixes([
+        limit({ label: "Gemini", windowShort: "5h" }),
+        limit({ label: "Gemini", windowShort: "7d" }),
+        limit({ label: "Claude", windowShort: "7d" }),
+      ]),
+    ).toEqual(["5h", "7d", ""]);
   });
 });
 

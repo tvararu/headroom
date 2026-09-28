@@ -9,6 +9,7 @@ import {
   renderBarHtml,
   renderMain,
 } from "./render";
+import { hintVisible } from "./format";
 import { applyTheme, loadTheme, saveTheme, stepTheme } from "./themes";
 import { initScreenSaverBridge, loadJson, mapKey } from "./webos";
 
@@ -86,6 +87,7 @@ function tick(): void {
     fresh.text,
     freshCls,
     theme,
+    hintVisible(nowMs, lastKeyAt),
   );
 
   const minute = Math.floor(nowMs / 60000);
@@ -93,7 +95,8 @@ function tick(): void {
   if (mainKey !== lastRenderMainKey) {
     lastRenderMainKey = mainKey;
     main.innerHTML = renderMain(data, layout, nowMs);
-    main.className = mainRowsClass(data ? data.providers.length : 0);
+    main.className =
+      layout === "list" ? "" : mainRowsClass(data ? data.providers.length : 0);
   }
   const alertsKey = `${data ? String(data.generatedAt) : "none"}|${minute}`;
   if (alertsKey !== lastRenderAlertsKey) {
@@ -105,12 +108,13 @@ function tick(): void {
 
 function onKey(e: KeyboardEvent): void {
   const nowMs = Date.now();
-  if (dimmed(nowMs, lastKeyAt)) {
-    lastKeyAt = nowMs;
+  const wasDimmed = dimmed(nowMs, lastKeyAt);
+  lastKeyAt = nowMs;
+  if (wasDimmed) {
     e.preventDefault();
+    tick();
     return;
   }
-  lastKeyAt = nowMs;
   const action = mapKey(e.keyCode);
   if (action === null) return;
   if (action === "toggle" || action === "tiles" || action === "list") {

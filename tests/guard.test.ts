@@ -29,9 +29,13 @@ describe("remote keys", () => {
     expect(mapKey(50)).toBe("list");
     expect(mapKey(98)).toBe("list");
   });
-  test("channel up and down step the theme both ways", () => {
-    expect(mapKey(33)).toBe("themeNext");
-    expect(mapKey(34)).toBe("themePrev");
+  test("left and right arrows step the theme both ways", () => {
+    expect(mapKey(39)).toBe("themeNext");
+    expect(mapKey(37)).toBe("themePrev");
+  });
+  test("channel keys are reserved and do nothing", () => {
+    expect(mapKey(33)).toBe(null);
+    expect(mapKey(34)).toBe(null);
   });
 });
 
