@@ -91,6 +91,9 @@ Use Conventional Commits, title is "what", body is "why":
 - Capitalize after prefix: `feat: Add thing` not `feat: add thing`
 - Blank line, then 1-3 sentence description of "why", no bullet points
 - Always `git add` and `git commit` as separate commands
+- hk is pinned to 1.38.0 because hk 2.x cannot parse this `hk.pkl`
+  ("listing index amendment requires an Int index"). Do not bump it
+  without migrating `hk.pkl`.
 
 ## Rules
 

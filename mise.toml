@@ -1,6 +1,6 @@
 [tools]
 bun = "latest"
-hk = "latest"
+hk = "1.38.0"
 node = "22"
 pkl = "latest"
 "npm:@biomejs/biome" = "latest"
