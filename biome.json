@@ -2,14 +2,12 @@
   "$schema": "https://biomejs.dev/schemas/2.5.14/schema.json",
   "vcs": { "enabled": true, "clientKind": "git", "useIgnoreFile": true },
   "formatter": { "indentStyle": "space" },
-  "linter": { "enabled": true },
+  "linter": {
+    "enabled": true,
+    "rules": { "complexity": { "useLiteralKeys": "off" } }
+  },
   "files": {
-    "includes": [
-      "src/**/*.ts",
-      "scripts/**/*.ts",
-      "tests/**/*.ts",
-      "public/*.json",
-      "*.json"
-    ]
-  }
+    "includes": ["src/**/*.ts", "scripts/**/*.ts", "public/*.json", "*.json"]
+  },
+  "plugins": ["./config/biome.grit"]
 }
