@@ -1,4 +1,4 @@
-import { join } from "node:path";
+import { join, resolve, sep } from "node:path";
 
 const DIST = join(import.meta.dir, "..", "dist");
 
@@ -22,8 +22,12 @@ Bun.serve({
       url.pathname === "/"
         ? "index.html"
         : decodeURIComponent(url.pathname.slice(1));
-    const file = Bun.file(join(DIST, rel));
-    if (!(await file.exists()))
+    const path = resolve(DIST, rel);
+    const file = Bun.file(path);
+    if (
+      (path !== DIST && !path.startsWith(DIST + sep)) ||
+      !(await file.exists())
+    )
       return new Response("not found", { status: 404 });
     const ext = rel.slice(rel.lastIndexOf("."));
     return new Response(file, {
