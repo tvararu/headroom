@@ -1,6 +1,7 @@
 {
   "name": "headroom",
   "private": true,
+  "license": "MIT",
   "type": "module",
   "devDependencies": {
     "@types/bun": "1.4.2",
