@@ -1,9 +1,19 @@
-export type RemoteAction = "layout" | "theme" | "exit";
+export type RemoteAction =
+  | "toggle"
+  | "tiles"
+  | "list"
+  | "themeNext"
+  | "themePrev"
+  | "exit";
 
 export function mapKey(keyCode: number): RemoteAction | null {
-  if (keyCode === 13) return "layout";
+  if (keyCode === 13) return "toggle";
+  if (keyCode === 49 || keyCode === 97) return "tiles";
+  if (keyCode === 50 || keyCode === 98) return "list";
+  if (keyCode === 33) return "themeNext";
+  if (keyCode === 34) return "themePrev";
   if (keyCode === 403 || keyCode === 404 || keyCode === 405 || keyCode === 406)
-    return "theme";
+    return "themeNext";
   if (keyCode === 461 || keyCode === 27) return "exit";
   return null;
 }

@@ -63,9 +63,9 @@ export function saveTheme(
   }
 }
 
-export function nextTheme(name: string): string {
+export function stepTheme(name: string, step: 1 | -1): string {
   const i = THEMES.findIndex((t) => t.name === name);
-  return THEMES[(i + 1 + THEMES.length) % THEMES.length].name;
+  return THEMES[(i + step + THEMES.length) % THEMES.length].name;
 }
 
 export function applyTheme(

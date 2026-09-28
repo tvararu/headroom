@@ -1,5 +1,5 @@
 import type { HeadroomData } from "../shared/schema";
-import { dimmed, layoutAt, orbitAt, toggleOverride } from "./guard";
+import { dimmed, layoutAt, pinLayout } from "./guard";
 import type { Layout, LayoutOverride } from "./guard";
 import {
   dataAge,
@@ -9,7 +9,7 @@ import {
   renderBarHtml,
   renderMain,
 } from "./render";
-import { applyTheme, loadTheme, nextTheme, saveTheme } from "./themes";
+import { applyTheme, loadTheme, saveTheme, stepTheme } from "./themes";
 import { initScreenSaverBridge, loadJson, mapKey } from "./webos";
 
 const RELOAD_MS = 15000;
@@ -70,9 +70,6 @@ function tick(): void {
     else root.classList.remove("list");
   }
 
-  const [ox, oy] = orbitAt(nowMs);
-  root.style.transform = `translate(${ox}px,${oy}px)`;
-
   if (dimmed(nowMs, lastKeyAt)) root.classList.add("dim");
   else root.classList.remove("dim");
 
@@ -116,11 +113,13 @@ function onKey(e: KeyboardEvent): void {
   lastKeyAt = nowMs;
   const action = mapKey(e.keyCode);
   if (action === null) return;
-  if (action === "layout") {
-    layoutOverride = toggleOverride(nowMs, layout);
+  if (action === "toggle" || action === "tiles" || action === "list") {
+    const target =
+      action === "toggle" ? (layout === "tiles" ? "list" : "tiles") : action;
+    layoutOverride = pinLayout(nowMs, target);
     layout = layoutAt(nowMs, layoutOverride);
-  } else if (action === "theme") {
-    theme = nextTheme(theme);
+  } else if (action === "themeNext" || action === "themePrev") {
+    theme = stepTheme(theme, action === "themeNext" ? 1 : -1);
     saveTheme(window.localStorage, theme);
     const root = document.documentElement;
     if (root) applyTheme(root, theme);

@@ -48,14 +48,15 @@ names or error causes. Tests enforce this.
 
 The app blocks the TV screensaver, so it guards the OLED itself (`src/app/guard.ts`):
 
-- The layout swaps between tiles and list every 10 min, which moves the bar top/bottom.
-- The whole UI moves 6 px each minute, in a 9-step orbit.
+- The layout swaps between tiles and list every minute, which moves the bar
+  top/bottom and changes every lit pixel.
 - It dims to 45% after 30 min with no key press. Any key wakes it.
 
 ## Remote
 
-OK toggles the layout until the next 10-min boundary. Any colour button cycles
-the theme. Back exits.
+`1` and `2` jump to tiles or list, and OK toggles them. Each holds the chosen
+layout for 10 min, then the minute rotation resumes. CH+ and any colour button
+go to the next theme, CH− to the previous one. Back exits.
 
 ## Commands
 

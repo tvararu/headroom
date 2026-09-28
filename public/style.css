@@ -92,7 +92,7 @@ body {
   display: grid;
   grid-template-columns: repeat(60, 1fr);
   grid-template-rows: minmax(0, 1fr) minmax(0, 1fr);
-  gap: 5px;
+  gap: 34px 5px;
   padding: 34px 10px 10px 10px;
   overflow: hidden;
   min-height: 0;
