@@ -1,0 +1,635 @@
+{
+  "generatedAt": 1790603868229,
+  "reports": [
+    {
+      "provider": "openai-codex",
+      "fetchedAt": 1790603867073,
+      "limits": [
+        {
+          "id": "openai-codex:primary",
+          "label": "7 days",
+          "scope": {
+            "provider": "openai-codex",
+            "windowId": "7d",
+            "shared": true
+          },
+          "window": {
+            "id": "7d",
+            "label": "7 days",
+            "durationMs": 604800000,
+            "resetsAt": 1791054425000
+          },
+          "amount": {
+            "used": 23,
+            "limit": 100,
+            "remaining": 77,
+            "usedFraction": 0.23,
+            "remainingFraction": 0.77,
+            "unit": "percent"
+          },
+          "status": "ok"
+        }
+      ],
+      "resetCredits": {
+        "availableCount": 0
+      },
+      "metadata": {
+        "planType": "prolite",
+        "allowed": true,
+        "limitReached": false,
+        "email": "acct-b@example.test",
+        "accountId": "acct-b",
+        "meterStates": {
+          "chat": {
+            "allowed": true,
+            "limitReached": false
+          }
+        },
+        "orgId": "org-b",
+        "orgName": "Org B"
+      }
+    },
+    {
+      "provider": "openai-codex",
+      "fetchedAt": 1790603867073,
+      "limits": [
+        {
+          "id": "openai-codex:primary",
+          "label": "7 days",
+          "scope": {
+            "provider": "openai-codex",
+            "windowId": "7d",
+            "shared": true
+          },
+          "window": {
+            "id": "7d",
+            "label": "7 days",
+            "durationMs": 604800000,
+            "resetsAt": 1791054425000
+          },
+          "amount": {
+            "used": 61,
+            "limit": 100,
+            "remaining": 39,
+            "usedFraction": 0.61,
+            "remainingFraction": 0.39,
+            "unit": "percent"
+          },
+          "status": "ok"
+        }
+      ],
+      "resetCredits": {
+        "availableCount": 0
+      },
+      "metadata": {
+        "planType": "prolite",
+        "allowed": true,
+        "limitReached": false,
+        "email": "acct-f@example.test",
+        "accountId": "acct-f",
+        "meterStates": {
+          "chat": {
+            "allowed": true,
+            "limitReached": false
+          }
+        },
+        "orgId": "org-f",
+        "orgName": "Org F"
+      }
+    },
+    {
+      "provider": "xai-oauth",
+      "fetchedAt": 1790603868227,
+      "limits": [
+        {
+          "id": "xai-oauth:credits:1w",
+          "label": "SuperGrok Weekly Credits",
+          "scope": {
+            "provider": "xai-oauth",
+            "accountId": "acct-e",
+            "windowId": "1w",
+            "shared": true
+          },
+          "window": {
+            "id": "1w",
+            "label": "Weekly",
+            "durationMs": 604800000,
+            "resetsAt": 1791068483157
+          },
+          "amount": {
+            "used": 12,
+            "limit": 100,
+            "remaining": 88,
+            "usedFraction": 0.12,
+            "remainingFraction": 0.88,
+            "unit": "percent"
+          },
+          "status": "ok"
+        },
+        {
+          "id": "xai-oauth:product:grokbuild:1w",
+          "label": "Grok Build (Weekly)",
+          "scope": {
+            "provider": "xai-oauth",
+            "accountId": "acct-e",
+            "windowId": "1w",
+            "shared": true
+          },
+          "window": {
+            "id": "1w",
+            "label": "Weekly",
+            "durationMs": 604800000,
+            "resetsAt": 1791068483157
+          },
+          "amount": {
+            "used": 11,
+            "limit": 100,
+            "remaining": 89,
+            "usedFraction": 0.11,
+            "remainingFraction": 0.89,
+            "unit": "percent"
+          },
+          "status": "ok"
+        },
+        {
+          "id": "xai-oauth:product:grokchat:1w",
+          "label": "GrokChat (Weekly)",
+          "scope": {
+            "provider": "xai-oauth",
+            "accountId": "acct-e",
+            "windowId": "1w",
+            "shared": true
+          },
+          "window": {
+            "id": "1w",
+            "label": "Weekly",
+            "durationMs": 604800000,
+            "resetsAt": 1791068483157
+          },
+          "amount": {
+            "used": 1,
+            "limit": 100,
+            "remaining": 99,
+            "usedFraction": 0.01,
+            "remainingFraction": 0.99,
+            "unit": "percent"
+          },
+          "status": "ok"
+        },
+        {
+          "id": "xai-oauth:product:grokvoice:1w",
+          "label": "GrokVoice (Weekly)",
+          "scope": {
+            "provider": "xai-oauth",
+            "accountId": "acct-e",
+            "windowId": "1w",
+            "shared": true
+          },
+          "window": {
+            "id": "1w",
+            "label": "Weekly",
+            "durationMs": 604800000,
+            "resetsAt": 1791068483157
+          },
+          "amount": {
+            "used": 0,
+            "limit": 100,
+            "remaining": 100,
+            "usedFraction": 0,
+            "remainingFraction": 1,
+            "unit": "percent"
+          },
+          "status": "ok"
+        }
+      ],
+      "metadata": {
+        "endpoint": "https://cli-chat-proxy.grok.com/v1/billing?format=credits",
+        "source": "cli-chat-proxy.grok.com/v1/billing",
+        "billingKind": "weekly",
+        "accountId": "acct-e",
+        "email": "acct-e@example.test"
+      }
+    },
+    {
+      "provider": "google-antigravity",
+      "fetchedAt": 1790603658874,
+      "limits": [
+        {
+          "id": "google-antigravity:google:default:gemini-5h",
+          "label": "Gemini",
+          "scope": {
+            "provider": "google-antigravity",
+            "projectId": "project-c",
+            "windowId": "5h"
+          },
+          "window": {
+            "id": "5h",
+            "label": "5 Hour",
+            "durationMs": 18000000,
+            "resetsAt": 1790615879000
+          },
+          "amount": {
+            "unit": "percent",
+            "remainingFraction": 0.7101339,
+            "usedFraction": 0.2898661,
+            "remaining": 71.01339,
+            "used": 28.986610000000002,
+            "limit": 100
+          },
+          "status": "ok"
+        },
+        {
+          "id": "google-antigravity:google:default:gemini-weekly",
+          "label": "Gemini",
+          "scope": {
+            "provider": "google-antigravity",
+            "projectId": "project-c",
+            "windowId": "weekly"
+          },
+          "window": {
+            "id": "weekly",
+            "label": "Weekly",
+            "durationMs": 604800000,
+            "resetsAt": 1790850573000
+          },
+          "amount": {
+            "unit": "percent",
+            "remainingFraction": 0.9509227,
+            "usedFraction": 0.04907729999999999,
+            "remaining": 95.09227,
+            "used": 4.907729999999999,
+            "limit": 100
+          },
+          "status": "ok"
+        },
+        {
+          "id": "google-antigravity:anthropic:default:3p-weekly",
+          "label": "Claude & GPT (shared)",
+          "scope": {
+            "provider": "google-antigravity",
+            "projectId": "project-c",
+            "windowId": "weekly",
+            "shared": true,
+            "sharedGroup": "3p-weekly:weekly"
+          },
+          "window": {
+            "id": "weekly",
+            "label": "Weekly",
+            "durationMs": 604800000,
+            "resetsAt": 1790627287000
+          },
+          "amount": {
+            "unit": "percent",
+            "remainingFraction": 0.9768292,
+            "usedFraction": 0.023170800000000047,
+            "remaining": 97.68292,
+            "used": 2.3170800000000047,
+            "limit": 100
+          },
+          "status": "ok"
+        },
+        {
+          "id": "google-antigravity:openai:default:3p-weekly",
+          "label": "Claude & GPT (shared)",
+          "scope": {
+            "provider": "google-antigravity",
+            "projectId": "project-c",
+            "windowId": "weekly",
+            "shared": true,
+            "sharedGroup": "3p-weekly:weekly"
+          },
+          "window": {
+            "id": "weekly",
+            "label": "Weekly",
+            "durationMs": 604800000,
+            "resetsAt": 1790627287000
+          },
+          "amount": {
+            "unit": "percent",
+            "remainingFraction": 0.9768292,
+            "usedFraction": 0.023170800000000047,
+            "remaining": 97.68292,
+            "used": 2.3170800000000047,
+            "limit": 100
+          },
+          "status": "ok"
+        },
+        {
+          "id": "google-antigravity:anthropic:default:3p-5h",
+          "label": "Claude & GPT (shared)",
+          "scope": {
+            "provider": "google-antigravity",
+            "projectId": "project-c",
+            "windowId": "5h",
+            "shared": true,
+            "sharedGroup": "3p-5h:5h"
+          },
+          "window": {
+            "id": "5h",
+            "label": "5 Hour",
+            "durationMs": 18000000,
+            "resetsAt": 1790621659000
+          },
+          "amount": {
+            "unit": "percent",
+            "remainingFraction": 1,
+            "usedFraction": 0,
+            "remaining": 100,
+            "used": 0,
+            "limit": 100
+          },
+          "status": "ok"
+        },
+        {
+          "id": "google-antigravity:openai:default:3p-5h",
+          "label": "Claude & GPT (shared)",
+          "scope": {
+            "provider": "google-antigravity",
+            "projectId": "project-c",
+            "windowId": "5h",
+            "shared": true,
+            "sharedGroup": "3p-5h:5h"
+          },
+          "window": {
+            "id": "5h",
+            "label": "5 Hour",
+            "durationMs": 18000000,
+            "resetsAt": 1790621659000
+          },
+          "amount": {
+            "unit": "percent",
+            "remainingFraction": 1,
+            "usedFraction": 0,
+            "remaining": 100,
+            "used": 0,
+            "limit": 100
+          },
+          "status": "ok"
+        }
+      ],
+      "metadata": {
+        "endpoint": "https://daily-cloudcode-pa.googleapis.com",
+        "projectId": "project-c",
+        "email": "acct-c@example.test"
+      }
+    },
+    {
+      "provider": "opencode-go",
+      "fetchedAt": 1790603867508,
+      "limits": [
+        {
+          "id": "rolling-5h",
+          "label": "5 Hour limit",
+          "scope": {
+            "provider": "opencode-go",
+            "windowId": "5h",
+            "shared": true
+          },
+          "window": {
+            "id": "5h",
+            "label": "5 Hour",
+            "resetsAt": 1790611906068,
+            "durationMs": 18000000
+          },
+          "amount": {
+            "used": 20,
+            "usedFraction": 0.2,
+            "remainingFraction": 0.8,
+            "unit": "percent"
+          },
+          "status": "ok"
+        },
+        {
+          "id": "weekly",
+          "label": "Weekly limit",
+          "scope": {
+            "provider": "opencode-go",
+            "windowId": "7d",
+            "shared": true
+          },
+          "window": {
+            "id": "7d",
+            "label": "Weekly",
+            "resetsAt": 1791158400000,
+            "durationMs": 604800000
+          },
+          "amount": {
+            "used": 8,
+            "usedFraction": 0.08,
+            "remainingFraction": 0.92,
+            "unit": "percent"
+          },
+          "status": "ok"
+        },
+        {
+          "id": "monthly",
+          "label": "Monthly limit",
+          "scope": {
+            "provider": "opencode-go",
+            "windowId": "monthly",
+            "shared": true
+          },
+          "window": {
+            "id": "monthly",
+            "label": "Monthly",
+            "resetsAt": 1792617904000
+          },
+          "amount": {
+            "used": 14,
+            "usedFraction": 0.14,
+            "remainingFraction": 0.86,
+            "unit": "percent"
+          },
+          "status": "ok"
+        }
+      ],
+      "metadata": {
+        "planType": "OpenCode Go",
+        "endpoint": "https://opencode.ai/zen/go/v1/usage"
+      }
+    },
+    {
+      "provider": "anthropic",
+      "fetchedAt": 1790603861926,
+      "limits": [
+        {
+          "id": "anthropic:5h",
+          "label": "Claude 5 Hour",
+          "scope": {
+            "provider": "anthropic",
+            "windowId": "5h",
+            "shared": true
+          },
+          "window": {
+            "id": "5h",
+            "label": "5 Hour",
+            "durationMs": 18000000,
+            "resetsAt": 1790615400000
+          },
+          "amount": {
+            "used": 5,
+            "limit": 100,
+            "remaining": 95,
+            "usedFraction": 0.05,
+            "remainingFraction": 0.95,
+            "unit": "percent"
+          },
+          "status": "ok"
+        },
+        {
+          "id": "anthropic:7d",
+          "label": "Claude 7 Day",
+          "scope": {
+            "provider": "anthropic",
+            "windowId": "7d",
+            "shared": true
+          },
+          "window": {
+            "id": "7d",
+            "label": "7 Day",
+            "durationMs": 604800000,
+            "resetsAt": 1791072000000
+          },
+          "amount": {
+            "used": 67,
+            "limit": 100,
+            "remaining": 33,
+            "usedFraction": 0.67,
+            "remainingFraction": 0.32999999999999996,
+            "unit": "percent"
+          },
+          "status": "ok"
+        },
+        {
+          "id": "anthropic:7d:fable",
+          "label": "Claude 7 Day (Fable)",
+          "scope": {
+            "provider": "anthropic",
+            "windowId": "7d",
+            "tier": "fable"
+          },
+          "window": {
+            "id": "7d",
+            "label": "7 Day",
+            "durationMs": 604800000,
+            "resetsAt": 1791072000000
+          },
+          "amount": {
+            "used": 0,
+            "limit": 100,
+            "remaining": 100,
+            "usedFraction": 0,
+            "remainingFraction": 1,
+            "unit": "percent"
+          },
+          "status": "ok"
+        }
+      ],
+      "metadata": {
+        "accountId": "acct-a",
+        "email": "acct-a@example.test",
+        "orgId": "org-a",
+        "orgName": "Org A",
+        "endpoint": "https://api.anthropic.com/api/oauth/usage",
+        "headersUpdatedAt": 1790603861926
+      }
+    }
+  ],
+  "accountsWithoutUsage": [],
+  "disabledCredentials": [
+    {
+      "id": 4,
+      "provider": "anthropic",
+      "type": "oauth",
+      "cause": "oauth refresh failed: OAuthError: anthropic token refresh failed: 400 {\"error\": \"invalid_grant\", \"error_description\": \"Refresh token not found or invalid\"}",
+      "email": "acct-z@example.test",
+      "accountId": "acct-z",
+      "orgId": "org-z",
+      "orgName": "Org Z",
+      "disabledAtMs": 1790284698000
+    }
+  ],
+  "capacity": {
+    "openai-codex": [
+      {
+        "window": "7d",
+        "durationMs": 604800000,
+        "meter": "chat",
+        "accounts": 2,
+        "usedAccounts": 0.84,
+        "remainingAccounts": 1.16
+      }
+    ],
+    "xai-oauth": [
+      {
+        "window": "7d",
+        "durationMs": 604800000,
+        "accounts": 1,
+        "usedAccounts": 0.12,
+        "remainingAccounts": 0.88
+      }
+    ],
+    "google-antigravity": [
+      {
+        "window": "5h",
+        "durationMs": 18000000,
+        "accounts": 1,
+        "usedAccounts": 0.2898661,
+        "remainingAccounts": 0.7101339
+      },
+      {
+        "window": "7d",
+        "durationMs": 604800000,
+        "accounts": 1,
+        "usedAccounts": 0.04907729999999999,
+        "remainingAccounts": 0.9509227
+      }
+    ],
+    "opencode-go": [
+      {
+        "window": "5h",
+        "durationMs": 18000000,
+        "accounts": 1,
+        "usedAccounts": 0.2,
+        "remainingAccounts": 0.8
+      },
+      {
+        "window": "7d",
+        "durationMs": 604800000,
+        "accounts": 1,
+        "usedAccounts": 0.08,
+        "remainingAccounts": 0.92
+      },
+      {
+        "window": "Monthly",
+        "accounts": 1,
+        "usedAccounts": 0.14,
+        "remainingAccounts": 0.86
+      }
+    ],
+    "anthropic": [
+      {
+        "window": "5h",
+        "durationMs": 18000000,
+        "accounts": 1,
+        "usedAccounts": 0.05,
+        "remainingAccounts": 0.95
+      },
+      {
+        "window": "7d",
+        "durationMs": 604800000,
+        "accounts": 1,
+        "usedAccounts": 0.67,
+        "remainingAccounts": 0.32999999999999996
+      },
+      {
+        "window": "7d",
+        "durationMs": 604800000,
+        "meter": "fable",
+        "accounts": 1,
+        "usedAccounts": 0,
+        "remainingAccounts": 1
+      }
+    ]
+  }
+}
