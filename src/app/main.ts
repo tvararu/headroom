@@ -3,7 +3,7 @@ import { dimmed, layoutAt, orbitAt, toggleOverride } from "./guard";
 import type { Layout, LayoutOverride } from "./guard";
 import { freshness, renderAlerts, renderBarHtml, renderMain } from "./render";
 import { applyTheme, loadTheme, nextTheme, saveTheme } from "./themes";
-import { loadJson, mapKey } from "./webos";
+import { initScreenSaverBridge, loadJson, mapKey } from "./webos";
 
 const RELOAD_MS = 15000;
 
@@ -131,6 +131,7 @@ function boot(): void {
     const r = document.getElementById("root");
     if (r) r.classList.add("list");
   }
+  initScreenSaverBridge("org.vararu.headroom");
   document.addEventListener("keydown", onKey);
   reload();
   setInterval(reload, RELOAD_MS);
