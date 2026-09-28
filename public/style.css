@@ -35,10 +35,13 @@ body {
   background: var(--bg);
   color: var(--fg);
 }
+#bar { grid-row: 1; }
+#alerts { grid-row: 2; }
+#main { grid-row: 3; min-height: 0; }
 #root.list {
   grid-template-rows: 1fr auto 52px;
 }
-#root.list #main { grid-row: 1; display: block; }
+#root.list #main { grid-row: 1; display: block; min-height: 0; }
 #root.list #main table.list { width: 100%; }
 #root.list #alerts { grid-row: 2; }
 #root.list #bar { grid-row: 3; }
