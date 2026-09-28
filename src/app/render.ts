@@ -130,7 +130,7 @@ export function renderBarHtml(
   const chip1 = layout === "tiles" ? "chip on" : "chip";
   const chip2 = layout === "list" ? "chip on" : "chip";
   return (
-    '<div class="bar-left"><span class="logo">\u25ae\u25ae\u25ae</span><span class="brand">headroom</span>' +
+    '<div class="bar-left"><span class="logo">\u2582\u2584\u2586</span><span class="brand">headroom</span>' +
     '<span class="' +
     chip1 +
     '">1</span><span class="' +
