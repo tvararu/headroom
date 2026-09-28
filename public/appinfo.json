@@ -1,0 +1,15 @@
+{
+  "id": "org.vararu.headroom",
+  "version": "0.1.0",
+  "vendor": "Demonstrable",
+  "type": "web",
+  "main": "index.html",
+  "title": "Headroom",
+  "icon": "icon.png",
+  "largeIcon": "largeIcon.png",
+  "resolution": "1920x1080",
+  "transparent": false,
+  "disableBackHistoryAPI": true,
+  "enablePigScreenSaver": false,
+  "screenSaverProperties": { "preferredType": 3 }
+}
