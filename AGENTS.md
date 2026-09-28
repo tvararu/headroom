@@ -49,8 +49,10 @@ CSS outside the design system: add a component or extend a token instead.
 - The TV font has no glyphs outside the bundled Nerd Font plus its own
   blocks, and there is no fallback font. A desktop browser falls back
   silently, so check new symbols on the TV itself.
-- `mise screenshot` captures the TV DOM (luna `capture/executeOneShot`), so
-  it is valid visual proof for this app.
+- `mise screenshot` captures the TV DOM (luna `capture/executeOneShot`) into
+  the git-ignored `./screenshot.png`, so it is valid visual proof for this
+  app. Pass a path (`mise screenshot docs/tiles.png`) to refresh the README
+  images instead.
 
 ## Commands
 
@@ -60,10 +62,19 @@ mise build         # dist/
 mise push          # collect and push to the TV (--dry-run, --out <path>)
 mise serve         # preview dist/ on :3010
 mise deploy        # package, install, launch, push
-mise screenshot    # capture docs/tiles.png from the TV
+mise screenshot    # capture ./screenshot.png from the TV (or pass a path)
 mise inspect       # forward the TV inspector to localhost:9998
 mise sync-themes   # regenerate themes from the pinned Omarchy commit
 ```
+
+## Verify
+
+- `mise ci` before committing.
+- Local preview: `mise build`, then `mise push --out dist/data/usage.json`
+  and `mise serve` (dist/ on :3010).
+- TV proof: `mise deploy`, then `mise screenshot`, then look at the image.
+  The view swaps every minute, so wait for the minute or press `1`/`2` via
+  the inspector (`mise inspect`, devtools console) to capture a given view.
 
 Tests are colocated (`foo.ts` → `foo.test.ts`) and run with `bun test`.
 `HEADROOM_TV` (ssh host or `user@host`) comes from `mise.local.toml`; see

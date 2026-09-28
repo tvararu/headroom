@@ -85,7 +85,7 @@ async function screenshot(outPath?: string): Promise<void> {
   if (!out.includes('"returnValue":true')) {
     throw new Error(`tv: capture failed: ${out}`);
   }
-  const dest = outPath ?? "docs/tiles.png";
+  const dest = outPath ?? "screenshot.png";
   await sh(["scp", "-q", targetPath("/tmp/headroom.png"), dest]);
   console.log(`saved ${dest}`);
 }

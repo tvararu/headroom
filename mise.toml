@@ -73,8 +73,9 @@ description = "Forward the TV inspector (devtools on :9998)"
 run = "bun scripts/tv.ts inspect"
 
 [tasks.screenshot]
-description = "Capture a 1920x1080 screenshot from the TV into docs/"
-run = "bun scripts/tv.ts screenshot"
+description = "Capture a 1920x1080 screenshot from the TV (default ./screenshot.png)"
+usage = 'arg "[path]"'
+run = "bun scripts/tv.ts screenshot {{arg(name=\"path\")}}"
 
 [tasks.main]
 description = "Switch to main, pull, and clean up merged branches"

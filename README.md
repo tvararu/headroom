@@ -47,7 +47,8 @@ limits; tomorrow it wraps several dashboards, switched with CH+/CH−.
 it, and writes it atomically over ssh to the app's `data/usage.json`. Flags:
 `--dry-run` (no push) and `--out <path>` (write the JSON locally).
 
-A push timer example (systemd user unit, adjust paths to taste):
+A push timer example (two systemd user units; adjust paths to taste).
+`headroom-push.service` (no `[Install]` section — the timer pulls it in):
 
 ```ini
 [Unit]
@@ -57,15 +58,27 @@ Description=Push usage data to the headroom TV dashboard
 Type=oneshot
 WorkingDirectory=%h/code/headroom
 ExecStart=%h/.local/bin/mise push
-
-[Install]
-WantedBy=default.target
 ```
 
+`headroom-push.timer`:
+
 ```ini
+[Unit]
+Description=Push usage data to the headroom TV dashboard every minute
+
 [Timer]
 OnBootSec=1min
-OnUnitActiveSec=60s
+OnUnitActiveSec=1min
+
+[Install]
+WantedBy=timers.target
+```
+
+Install and enable with:
+
+```bash
+systemctl --user daemon-reload
+systemctl --user enable --now headroom-push.timer
 ```
 
 A TV that is off (ssh exit 255) is skipped, not failed.

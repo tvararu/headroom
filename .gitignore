@@ -3,11 +3,7 @@ dist/
 build/
 screenshot*.png
 .claude/*.local.*
-.playwright-mcp
 .claude/worktrees
-config/secret.key
-coverage
 mise.local.toml
 tmp/*
 !tmp/.keep
-docs/.keep
