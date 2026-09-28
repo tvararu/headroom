@@ -30,19 +30,22 @@ async function deploy(): Promise<void> {
   const ipk = readdirSync("build").find((f) => f.endsWith(".ipk"));
   if (!ipk) throw new Error("tv: no .ipk in build/, run mise package");
   await sh(["scp", "-q", `build/${ipk}`, `tv:${TEMP}/${ipk}`]);
-  const out = await sh([
-    "ssh",
-    "tv",
-    luna(
-      "com.webos.appInstallService/dev/install",
-      { id: APP_ID, ipkUrl: `${TEMP}/${ipk}`, subscribe: true },
-      '"state":"(installed|install failed)"|"returnValue":false',
-    ),
-  ]);
-  if (!out.includes('"state":"installed"')) {
-    throw new Error(`tv: install did not report installed:\n${out}`);
+  try {
+    const out = await sh([
+      "ssh",
+      "tv",
+      luna(
+        "com.webos.appInstallService/dev/install",
+        { id: APP_ID, ipkUrl: `${TEMP}/${ipk}`, subscribe: true },
+        '"state":"(installed|install failed)"|"returnValue":false',
+      ),
+    ]);
+    if (!out.includes('"state":"installed"')) {
+      throw new Error(`tv: install did not report installed:\n${out}`);
+    }
+  } finally {
+    await sh(["ssh", "tv", `rm -f ${TEMP}/${ipk}`]).catch(() => {});
   }
-  await sh(["ssh", "tv", `rm -f ${TEMP}/${ipk}`]);
   console.log(`installed ${ipk}`);
 }
 
