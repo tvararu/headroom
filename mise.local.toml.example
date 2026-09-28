@@ -1,0 +1,4 @@
+# Local overrides, not committed. Copy from mise.local.toml.example.
+# Set HEADROOM_TV to the TV's ssh host: a ~/.ssh/config alias or user@host.
+[env]
+HEADROOM_TV = "tv"
